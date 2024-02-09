@@ -6,7 +6,7 @@ Library for simplified access to the Gerstlix API
 ## Quick Guide ##
 To access the methods of the module, you need to:
 ```py
-import gerstlix_python
+from gerstlix_python import *
 gx = gerstlixAPI(token="your_token")
 ```
 
