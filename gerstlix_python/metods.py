@@ -1,5 +1,4 @@
 import requests
-import json
 
 acceptServers = [
     1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,
@@ -13,21 +12,30 @@ class gerstlixAPI():
     def __init__(self, token=None):
         self.token = token
 
+    def check_work_methods(self):
+        list = ["utils.geoIp","server.getStatus","server.getRecords","server.getRecord","server.getMinistersList","server.getMinister","server.getLeadersList","server.getLeader","server.getDeputyList","server.getDeputy","game.getRichPlayers","game.getOldPlayers","game.getMembers","game.getGhettoMap"]
+        status = []
+        for i in list:
+            r = requests.get(f"https://api2.gerstlix.com/v1/{i}")
+            status.append({i:"ok" if r.status_code == 500 else "fail"})
+        return status
+
+    def count_methods(self):
+        return (len(dir(self)) - len(dir(object)))-4
+
     def get_ip(self, ip=None):
         if ip != None:
             r = requests.get(f"https://api2.gerstlix.com/v1/utils.geoIp/?token={self.token}&ip={ip}")
-            data = r.json()
-            if data['success']:
-                ip = data['data']['ip']
-                country = data['data']['country']
-                city = data['data']['city']
-                region = data['data']['region']
-                isp = data['data']['isp']
-                return {"status": "success","ip": ip,"country": country,"city": city,"region": region,"isp": isp}
-            else:
-                return {"status": "fail", "message": {data['message']}}
+            return r.json()
         else:
             return {"status": "fail", "message":"Укажите параметры!"}
+
+    def get_info(self, server:int=None):
+        if server in acceptServers and server != None:
+            r = requests.get(f"https://api2.gerstlix.com/v1/server.getInfo/?token={self.token}&server={server}")
+            return r.json()
+        else:
+            return f"Сервер: {server} не находится в одобренном списке"
 
         
     def get_status(self, gameProject:str=None):
@@ -59,157 +67,70 @@ class gerstlixAPI():
     def get_records(self, server:int=None):
         if server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getRecords/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                records = data['data']['records']
-                result = []
-                for i in records:
-                    result.append({"fractionId": i['fractionId'],"leader": i['leader'],"count": i['count'],"date": i['date']})
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
     
     def get_record_fraction(self, server:int=None, fractionId:int=None):
         if server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getRecord/?token={self.token}&server={server}&fraction={fractionId}")
-            data = r.json()
-            result = {}
-            if data['success']:
-                result = {
-                    "serverId": data['data']['serverId'],
-                    "fractionId": data['data']['fractionId'],
-                    "leader": data['data']['leader'],
-                    "count": data['data']['count'],
-                    "date": data['data']['date']
-                }
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
 
     def get_minister_list(self, server:int=None):
         if server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getMinistersList/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                serverId = data['data']['serverId']
-                count = data['data']['count']
-                players = []
-                for i in data['data']['players']:
-                    players.append({"nickname": i['nickname'],"id": i['id'],"gid": i['gid'],"fraction": i['fraction']})
-                result = {"serverId": serverId,"count": count,"players": players}
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
 
     def get_minister(self, server:int=None, fractionId:int=None):
         if fractionId != None and server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getMinister/?token={self.token}&server={server}&fraction={fractionId}")
-            data = r.json()
-            result = {}
-            if data['success']:
-                result = {
-                    "id": data['data']['id'],
-                    "gid": data['data']['id'],
-                    "nickname": data['data']['nickname'],
-                    "fraction": data['data']['fraction']
-                }
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Проверьте serverID и fractionID на валидность"
 
     def get_leaders(self, server:int=None):
         if server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getLeadersList/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                serverId = data['data']['serverId']
-                count = data['data']['count']
-                players = []
-                for i in data['data']['players']:
-                    players.append({"nickname": i['nickname'],"id": i['id'],"gid": i['gid'],"fraction": i['fraction']})
-                result = {"serverId": serverId,"count": count,"players": players}
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
         
     def get_leader(self, server:int=None, fractionId:int=None):
         if server != None and server in acceptServers and fractionId != None:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getLeader/?token={self.token}&server={server}&fraction={fractionId}")
-            data = r.json()
-            if data['success']:
-                result = {"id": data['data']['id'],"gid": data['data']['id'],"nickname": data['data']['nickname'],"fraction": data['data']['fraction']}
-                return result
-            else:
-                return {"status":"fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Проверьте serverID и fractionID на валидность"
 
     def get_deputies(self, server: int = None):
         if server in acceptServers and server is not None:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getDeputyList/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                serverId = data['data']['serverId']
-                count = data['data']['count']
-                players = []
-                for i in data['data']['players']:
-                    players.append({"nickname": i['nickname'],"id": i['id'],"gid": i['gid'],"fraction": i['fraction']})
-                result = {"serverId": serverId, "count": count, "players": players}
-                return result
-            else:
-                return {"status": "fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
 
     def get_deputy(self, server:int=None, fractionId:int=None):
         if server != None and server in acceptServers and fractionId != None:
             r = requests.get(f"https://api2.gerstlix.com/v1/server.getDeputy/?token={self.token}&server={server}&fraction={fractionId}")
-            data = r.json()
-            if data['success']:
-                players = data['data']['players']
-                for i in players:
-                    result = {"nickname": i['nickname'],"id": i['id'],"gid": i['gid'],"fraction": i['fraction']}
-                return result
-            else:
-                return {"status": "fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Проверьте serverID и fractionID на валидность"
 
     def get_rich_players(self, server:int=None):
         if server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/game.getRichPlayers/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                result = []
-                for i in data['data']['players']:
-                    result.append({"name": i['name'], "isOnline":i['isOnline']})
-                return result
-            else:
-                return {"status": "fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
 
     def get_old_players(self, server:int=None):
         if server != None and server in acceptServers:
             r = requests.get(f"https://api2.gerstlix.com/v1/game.getOldPlayers/?token={self.token}&server={server}")
-            data = r.json()
-            if data['success']:
-                result = []
-                for i in data['data']['players']:
-                    result.append({"name": i['name'], "level": i['level'],"isOnline": i['isOnline']})
-                return result
-            else:
-                return {"status": "fail", "errorMessage": data['message']}
+            return r.json()
         else:
             return f"Сервер: {server} не находится в одобренном списке"
         
@@ -217,12 +138,7 @@ class gerstlixAPI():
         closedServers = [201,202,203,204,205,206]
         if server != None and server in acceptServers and server not in closedServers and fractionId != None:
             r = requests.get(f"https://api2.gerstlix.com/v1/game.getMembers/?token={self.token}&server={server}&fraction={fractionId}")
-            data = r.json()
-            players = data['data']['players']
-            playersInfo = []
-            for i in players:
-                playersInfo.append({"nickname": i['nickname'],"accountId": i['accountId'],"rank": i['rank'],"rankLabel": i['rankLabel'],"isLeader": i['isLeader'],"isOnline": i['isOnline'],"gameId": i['gameId'],"level": i['level']})
-            return {"serverId": data['data']['serverId'],"serverName": data['data']['serverName'],"fractionId": data['data']['fractionId'],"fractionName": data['data']['fractionName'],"playersLastUpdate": data['data']['playersLastUpdate'],"playersCount": data['data']['playersCount'],"playersInfo": playersInfo}
+            return r.json()
         else:
             return f"Проверьте serverID и fractionID на валидность"
 
