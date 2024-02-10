@@ -12,7 +12,7 @@ gx = gerstlixAPI(token="your_token")
 
 ## Example ##
 ```py
-import gerstlix_python
+from gerstlix_python import *
 gx = gerstlixAPI(token="your_token")
 
 result = gx.get_members(server=3, fractionId=1)
@@ -44,20 +44,23 @@ print(result)
 
 ## Currently available methods ##
 ```
-.get_leader             : params = server, fractionId
-.get_deputy             : params = server, fractionId
-.get_members            : params = server, fractionId
-.get_minister           : params = server, fractionId
-.get_record_fraction    : params = server, fractionId
-.get_status             : params = gameProject
-.get_ghetto_territories : params = server
-.get_old_players        : params = server
-.get_rich_players       : params = server
-.get_deputies           : params = server
-.get_leaders            : params = server
-.get_minister_list      : params = server
-.get_records            : params = server
-.get_ip                 : params = ip
+.get_leader             : params = server, fractionId | return => json
+.get_deputy             : params = server, fractionId | return => json
+.get_members            : params = server, fractionId | return => json
+.get_minister           : params = server, fractionId | return => json
+.get_record_fraction    : params = server, fractionId | return => json
+.get_status             : params = gameProject        | return => json
+.get_info               : params = server             | return => json 
+.get_ghetto_territories : params = server             | return => json
+.get_old_players        : params = server             | return => json
+.get_rich_players       : params = server             | return => json
+.get_deputies           : params = server             | return => json
+.get_leaders            : params = server             | return => json
+.get_minister_list      : params = server             | return => json
+.get_records            : params = server             | return => json
+.get_ip                 : params = ip                 | return => json
+.check_work_methods     : params = None               | return => json
+.count_methods          : params = None               | return => int
 ```
 ## Types of parameters ##
 ```
@@ -74,5 +77,3 @@ rrp          : Rodina Role Play
 ## Other information ##
 [Gerstlix site](https://gerstlix.com/)
 The module is specially designed for Gerstlix
-
-Developer: travkacode
